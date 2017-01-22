@@ -6,8 +6,8 @@
 " Changes:      Go to https://github.com/othree/yajs.vim for recent changes.
 " Repository:   https://github.com/othree/yajs.vim
 " Upstream:     https://github.com/jelera/vim-javascript-syntax
-" Credits:      Jose Elera Campana, Zhao Yi, Claudio Fleiner, Scott Shattuck 
-"               (This file is based on their hard work), gumnos (From the #vim 
+" Credits:      Jose Elera Campana, Zhao Yi, Claudio Fleiner, Scott Shattuck
+"               (This file is based on their hard work), gumnos (From the #vim
 "               IRC Channel in Freenode)
 
 
@@ -67,10 +67,10 @@ syntax match   javascriptOpSymbol              contained /\(%=\|%\)/ " 2: %=, %
 syntax match   javascriptOpSymbol              contained /\(\/=\|\/\)/ " 2: /=, /
 syntax match   javascriptOpSymbol              contained /\(\^\|\~\)/ " 2: ^, ~
 
-syntax match   javascriptOpSymbols             /!\+/ nextgroup=javascriptRegexpString,javascriptInvalidOp " 1: !
-syntax match   javascriptOpSymbols             /!==\?/ nextgroup=javascriptRegexpString,javascriptInvalidOp " 2: !=, !==
-syntax match   javascriptOpSymbols             /+\(+\|=\)\?/ nextgroup=javascriptRegexpString,javascriptInvalidOp " 3: +, ++, +=
-syntax match   javascriptOpSymbols             /-\(-\|=\)\?/ nextgroup=javascriptRegexpString,javascriptInvalidOp " 3: -, --, -=
+syntax match   javascriptOpSymbols             /!\+/ nextgroup=javascriptRegexp,javascriptInvalidOp " 1: !
+syntax match   javascriptOpSymbols             /!==\?/ nextgroup=javascriptRegexp,javascriptInvalidOp " 2: !=, !==
+syntax match   javascriptOpSymbols             /+\(+\|=\)\?/ nextgroup=javascriptRegexp,javascriptInvalidOp " 3: +, ++, +=
+syntax match   javascriptOpSymbols             /-\(-\|=\)\?/ nextgroup=javascriptRegexp,javascriptInvalidOp " 3: -, --, -=
 "
 syntax match   javascriptSpreadOp              contained /\.\.\./ " 1
 
@@ -79,7 +79,7 @@ syntax match   javascriptSpreadOp              contained /\.\.\./ " 1
 
 "JavaScript comments
 syntax keyword javascriptCommentTodo           contained TODO FIXME XXX TBD
-syntax region  javascriptLineComment           start="//" end="\n" contains=@Spell,javascriptCommentTodo 
+syntax region  javascriptLineComment           start="//" end="\n" contains=@Spell,javascriptCommentTodo
 syntax region  javascriptComment               start="/\*"  end="\*/" contains=@Spell,javascriptCommentTodo extend fold
 syntax region  javascriptComment               start="<!--"  end="--\s*>" contains=@Spell,javascriptCommentTodo extend fold
 syntax cluster javascriptComments              contains=javascriptDocComment,javascriptComment,javascriptLineComment
@@ -164,11 +164,11 @@ syntax match   javascriptDotStyleNotation      /\.style\./ nextgroup=javascriptD
 
 "Syntax in the JavaScript code
 " syntax match   javascriptASCII                 contained /\\\d\d\d/
-syntax region  javascriptString                start=/\z(["']\)/  skip=/\\\\\|\\\z1\|\\\n/  end=/\z1\|$/ nextgroup=@javascriptComments skipwhite skipempty extend
+syntax region  javascriptString                matchgroup=javascriptStringDelimiter start=/\z(["']\)/  skip=/\\\\\|\\\z1\|\\\n/  end=/\z1\|$/ nextgroup=@javascriptComments skipwhite skipempty extend
 syntax region  javascriptTemplate              start=/`/  skip=/\\\\\|\\`\|\n/  end=/`\|$/ contains=javascriptTemplateSubstitution nextgroup=@javascriptComments,javascriptOpSymbols skipwhite skipempty keepend
 syntax region  javascriptTemplateSubstitution  contained matchgroup=javascriptTemplateSB start=/\${/ end=/}/ contains=javascriptGlobal,javascriptBOMWindowProp,javascriptBOMWindowMethod,@javascriptExpression
 " syntax match   javascriptTemplateTag           /\k\+/ nextgroup=javascriptTemplate
-syntax region  javascriptArray                 matchgroup=javascriptBrackets start=/\[/ end=/]/ contains=@javascriptValue,javascriptComma,javascriptForComprehension,@javascriptComments,javascriptSpreadOp nextgroup=@javascriptComments,javascriptOpSymbols,@javascriptAfterIdentifier skipwhite skipempty
+syntax region  javascriptArray                 matchgroup=javascriptBrackets start=/\[/ end=/]/ contains=@javascriptValue,javascriptComma,javascriptForComprehension,@javascriptComments,javascriptSpreadOp,javascriptRegexp nextgroup=@javascriptComments,javascriptOpSymbols,@javascriptAfterIdentifier skipwhite skipempty
 
 syntax match   javascriptUnicodeEscapeSequence /\\u[0-9a-fA-F]\{4}/ nextgroup=@javascriptComments skipwhite skipempty
 syntax match   javascriptUnicodeEscapeSequence /\\u{[0-9a-fA-F]\+}/ nextgroup=@javascriptComments skipwhite skipempty
@@ -178,7 +178,7 @@ syntax match   javascriptNumber                /\<0[oO][0-7]\+\>/ nextgroup=@jav
 syntax match   javascriptNumber                /\<0[xX][0-9a-fA-F]\+\>/ nextgroup=@javascriptComments skipwhite skipempty
 syntax match   javascriptNumber                /[+-]\=\%(\d\+\.\d*\|\d\+\|\.\d\+\)\%([eE][+-]\=\d\+\)\=\>/ nextgroup=@javascriptComments skipwhite skipempty
 
-syntax cluster javascriptTypes                 contains=javascriptString,javascriptTemplate,javascriptTagRef,javascriptRegexpString,javascriptNumber,javascriptBoolean,javascriptNull,javascriptArray
+syntax cluster javascriptTypes                 contains=javascriptString,javascriptTemplate,javascriptTagRef,javascriptRegexp,javascriptNumber,javascriptBoolean,javascriptNull,javascriptArray
 syntax cluster javascriptValue                 contains=@javascriptTypes,@javascriptExpression,javascriptFuncKeyword,javascriptClassKeyword,javascriptObjectLiteral,javascriptIdentifier,javascriptIdentifierName,javascriptOperator,javascriptOpSymbols
 
 syntax match   javascriptLabel                 /[a-zA-Z_$]\k*\_s*:/he=e-1 contains=javascriptReserved nextgroup=@javascriptValue,@javascriptStatement skipwhite skipempty
@@ -192,7 +192,7 @@ syntax region  javascriptComputedProperty      contained matchgroup=javascriptPr
 " Value for object, statement for label statement
 
 syntax cluster javascriptTemplates             contains=javascriptTemplate,javascriptTemplateSubstitution,javascriptTemplateSB
-syntax cluster javascriptStrings               contains=javascriptProp,javascriptString,@javascriptTemplates,javascriptTagRef,@javascriptComments,javascriptDocComment,javascriptRegexpString,javascriptPropertyNameString
+syntax cluster javascriptStrings               contains=javascriptProp,javascriptString,@javascriptTemplates,javascriptTagRef,@javascriptComments,javascriptDocComment,javascriptRegexp,javascriptPropertyNameString
 syntax cluster javascriptNoReserved            contains=@javascriptStrings,@javascriptDocs,shellbang,javascriptObjectLiteral,javascriptParenObjectLiteral,javascriptObjectLabel,javascriptClassBlock,javascriptMethodName,javascriptMethod
 "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords
 syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved break catch class const continue
@@ -200,7 +200,7 @@ syntax keyword javascriptReservedCase          containedin=ALLBUT,@javascriptNoR
 syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved debugger default delete do else export
 syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved extends finally for function if  import
 syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved in instanceof let new return super
-syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved switch throw try typeof 
+syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved switch throw try typeof
 syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved,javascriptObjectMethodName var
 syntax keyword javascriptReserved              containedin=ALLBUT,@javascriptNoReserved void while with yield
 
@@ -275,7 +275,7 @@ runtime syntax/yajs/es6-math.vim
 runtime syntax/yajs/es6-date.vim
 runtime syntax/yajs/es6-json.vim
 runtime syntax/yajs/es6-reflect.vim
-runtime syntax/yajs/es6-regexp.vim
+" runtime syntax/yajs/es6-regexp.vim
 runtime syntax/yajs/es6-map.vim
 runtime syntax/yajs/es6-set.vim
 runtime syntax/yajs/es6-proxy.vim
@@ -353,7 +353,7 @@ syntax keyword javascriptOfComprehension       contained of
 syntax keyword javascriptIfComprehension       contained if nextgroup=javascriptIfComprehensionTail
 syntax region  javascriptIfComprehensionTail   contained matchgroup=javascriptParens start=/(/ end=/)/ contains=javascriptExpression nextgroup=javascriptForComprehension,javascriptIfComprehension skipwhite skipempty
 
-syntax region  javascriptObjectLiteral         contained matchgroup=javascriptBraces start=/{/ end=/}/ contains=@javascriptComments,javascriptObjectLabel,javascriptComma,@javascriptObjectMethod,javascriptPropertyNameString,javascriptComputedPropertyName,@javascriptValue fold
+syntax region  javascriptObjectLiteral         contained matchgroup=javascriptBraces start=/{/ end=/}/ contains=@javascriptComments,javascriptObjectLabel,javascriptComma,@javascriptObjectMethod,javascriptPropertyNameString,javascriptComputedPropertyName,@javascriptValue,javascriptRegexp fold
 
 " syntax match   javascriptBraces                /[\[\]]/
 " syntax match   javascriptParens                /[()]/
@@ -361,19 +361,38 @@ syntax region  javascriptObjectLiteral         contained matchgroup=javascriptBr
 syntax region  htmlScriptTag                   contained start=+<script+ end=+>+ fold contains=htmlTagN,htmlString,htmlArg,htmlValue,htmlTagError,htmlEvent
 syntax match   javascriptEndColons             /[;,]/
 
-" From vim runtime
-" <https://github.com/vim/vim/blob/master/runtime/syntax/javascript.vim#L48>
-syntax region  javascriptRegexpString          start=+/[^/*]+me=e-1 skip=+\\\\\|\\/+ end=+/[gimuy]\{0,5\}\s*$+ end=+/[gimuy]\{0,5\}\s*[;.,)\]}]+me=e-1 oneline
+" From vim-ruby, adapted for JS
+syntax region  javascriptRegexpParens	matchgroup=javascriptRegexpSpecial   start="(\(?:\|?<\=[=!]\|?>\|?<[a-z_]\w*>\|?[imx]*-[imx]*:\=\|\%(?#\)\@!\)" skip="\\)"  end=")"  contained transparent contains=@javascriptRegexpSpecial
+syntax region  javascriptRegexpBrackets	matchgroup=javascriptRegexpCharClass start="\[\^\="								  skip="\\\]" end="\]" contained transparent contains=javascriptStringEscape,javascriptRegexpEscape,javascriptRegexpCharClass oneline
+syntax match   javascriptRegexpCharClass	"\\[DdHhSsWw]"	       contained display
+syntax match   javascriptRegexpCharClass	"\[:\^\=\%(alnum\|alpha\|ascii\|blank\|cntrl\|digit\|graph\|lower\|print\|punct\|space\|upper\|xdigit\):\]" contained
+syntax match   javascriptRegexpEscape	"\\[].*?+^$|\\/(){}[]" contained
+syntax match   javascriptRegexpQuantifier	"[*?+][?+]\="	       contained display
+syntax match   javascriptRegexpQuantifier	"{\d\+\%(,\d*\)\=}?\=" contained display
+syntax match   javascriptRegexpAnchor	"[$^]\|\\[ABbGZz]"     contained display
+syntax match   javascriptRegexpDot	"\."		       contained display
+syntax match   javascriptRegexpSpecial	"|"		       contained display
+syntax match   javascriptRegexpSpecial	"\\[1-9]\d\=\d\@!"     contained display
+syntax match   javascriptRegexpSpecial	"\\k<\%([a-z_]\w*\|-\=\d\+\)\%([+-]\d\+\)\=>" contained display
+syntax match   javascriptRegexpSpecial	"\\k'\%([a-z_]\w*\|-\=\d\+\)\%([+-]\d\+\)\='" contained display
+syntax match   javascriptRegexpSpecial	"\\g<\%([a-z_]\w*\|-\=\d\+\)>" contained display
+syntax match   javascriptRegexpSpecial	"\\g'\%([a-z_]\w*\|-\=\d\+\)'" contained display
+
+syntax cluster javascriptRegexpSpecial	      contains=javascriptRegexpSpecial,javascriptRegexpEscape,javascriptRegexpBrackets,javascriptRegexpCharClass,javascriptRegexpDot,javascriptRegexpQuantifier,javascriptRegexpAnchor,javascriptRegexpParens
+
+" syntax region  javascriptRegexp                matchgroup=javascriptRegexpDelimiter start=+/[^/*]+ skip=+\\\\\|\\/+ end=+/[gimuy]\{0,5\}\s*[;.,)\]}]+me=e-1 contains=@javascriptRegexpSpecial oneline
+syntax region  javascriptRegexp matchgroup=javascriptRegexpDelimiter start=+/\(/\|*\)\@!+ skip=+\\\\\|\\/+ end=+/[gimuy]*+ contains=@javascriptRegexpSpecial oneline
+" syntax region  javascriptRegexp matchgroup=javascriptRegexpDelimiter start="\%(\h\k*\s\+\)\@<=/[ \t=]\@!" end="/[gimuy]*" skip="\\\\\|\\/" contains=@javascriptRegexpSpecial oneline
 
 syntax cluster javascriptEventTypes            contains=javascriptEventString,javascriptTemplate,javascriptTagRef,javascriptNumber,javascriptBoolean,javascriptNull
 syntax cluster javascriptOps                   contains=javascriptOpSymbols,javascriptLogicSymbols,javascriptOperator
-syntax cluster javascriptExpression            contains=javascriptArrowFuncDef,javascriptParenExp,@javascriptValue,javascriptObjectLiteral,javascriptFuncKeyword,javascriptYield,javascriptIdentifierName,javascriptRegexpString,@javascriptTypes,@javascriptOps,javascriptGlobal,javascriptGlobalMethod,jsxRegion,javascriptClassSuper
-syntax cluster javascriptEventExpression       contains=javascriptArrowFuncDef,javascriptParenExp,@javascriptValue,javascriptObjectLiteral,javascriptFuncKeyword,javascriptIdentifierName,javascriptRegexpString,@javascriptEventTypes,@javascriptOps,javascriptGlobal,jsxRegion
+syntax cluster javascriptExpression            contains=javascriptArrowFuncDef,javascriptParenExp,@javascriptValue,javascriptObjectLiteral,javascriptFuncKeyword,javascriptYield,javascriptIdentifierName,javascriptRegexp,@javascriptTypes,@javascriptOps,javascriptGlobal,javascriptGlobalMethod,jsxRegion,javascriptClassSuper
+syntax cluster javascriptEventExpression       contains=javascriptArrowFuncDef,javascriptParenExp,@javascriptValue,javascriptObjectLiteral,javascriptFuncKeyword,javascriptIdentifierName,javascriptRegexp,@javascriptEventTypes,@javascriptOps,javascriptGlobal,jsxRegion
 
 syntax region  javascriptLoopParen             contained matchgroup=javascriptParens start=/(/ end=/)/ contains=javascriptVariable,javascriptForOperator,javascriptEndColons,@javascriptExpression nextgroup=javascriptBlock skipwhite skipempty
 
 " syntax match   javascriptFuncCall              contained /[a-zA-Z]\k*\ze(/ nextgroup=javascriptFuncCallArg
-syntax region  javascriptFuncCallArg           contained matchgroup=javascriptParens start=/(/ end=/)/ contains=javascriptComma,@javascriptExpression,@javascriptComments nextgroup=@javascriptAfterIdentifier skipwhite skipempty 
+syntax region  javascriptFuncCallArg           contained matchgroup=javascriptParens start=/(/ end=/)/ contains=javascriptComma,@javascriptExpression,@javascriptComments nextgroup=@javascriptAfterIdentifier skipwhite skipempty
 syntax region  javascriptEventFuncCallArg      contained matchgroup=javascriptParens start=/(/ end=/)/ contains=@javascriptEventExpression,@javascriptComments
 
 syntax match   javascriptArrowFuncDef          /(\_[^)]*)\_s*=>/ contains=javascriptArrowFuncArg,javascriptComma,javascriptArrowFunc nextgroup=javascriptOperator,javascriptIdentifierName,javascriptBlock,javascriptArrowFuncDef,javascriptParenObjectLiteral,javascriptClassSuper,javascriptClassKeyword skipwhite skipempty
@@ -414,13 +433,22 @@ if exists("did_javascript_hilink")
   HiLink javascriptDocNamedParamType    Type
   HiLink javascriptDocParamName         Type
   HiLink javascriptDocParamType         Type
+  HiLink javascriptDelimiter            Delimiter
+  HiLink javascriptStringDelimiter      javascriptDelimiter
   HiLink javascriptString               String
   HiLink javascriptTemplate             String
   HiLink javascriptEventString          String
   HiLink javascriptASCII                Label
   HiLink javascriptTemplateSubstitution Label
   HiLink javascriptTemplateSB           javascriptTemplateSubstitution
-  HiLink javascriptRegexpString         String
+  HiLink javascriptRegexpDelimiter      javascriptDelimiter
+  HiLink javascriptRegexpEscape         javascriptRegexpSpecial
+  HiLink javascriptRegexpQuantifier     javascriptRegexpSpecial
+  HiLink javascriptRegexpAnchor         javascriptRegexpSpecial
+  HiLink javascriptRegexpDot            javascriptRegexpCharClass
+  HiLink javascriptRegexpCharClass      javascriptRegexpSpecial
+  HiLink javascriptRegexpSpecial        Special
+  HiLink javascriptRegexp               javascriptString
   HiLink javascriptGlobal               Constant
   HiLink javascriptCharacter            Character
   HiLink javascriptPrototype            Type
@@ -450,8 +478,8 @@ if exists("did_javascript_hilink")
   HiLink javascriptNumber               Number
   HiLink javascriptBoolean              Boolean
   HiLink javascriptObjectLabel          javascriptLabel
-  HiLink javascriptLabel                Label
-  HiLink javascriptPropertyNameString   Label
+  HiLink javascriptLabel                Constant
+  HiLink javascriptPropertyNameString   javascriptLabel
   HiLink javascriptImport               Special
   HiLink javascriptExport               Special
   HiLink javascriptTry                  Statement
