@@ -485,12 +485,12 @@ if exists("did_javascript_hilink")
   HiLink javascriptTry                  Statement
   HiLink javascriptExceptions           Statement
 
-  HiLink javascriptMethodName           javascriptLabel
+  HiLink javascriptMethodName           Function
   HiLink javascriptMethodAccessor       Operator
-  HiLink javascriptObjectMethodName     javascriptLabel
+  HiLink javascriptObjectMethodName     Function
 
-  HiLink javascriptFuncKeyword          Keyword
-  HiLink javascriptAsyncFunc            Keyword
+  HiLink javascriptFuncKeyword          javascriptKeyword
+  HiLink javascriptAsyncFunc            javascriptKeyword
   HiLink javascriptArrowFunc            Statement
   HiLink javascriptFuncName             Function
   HiLink javascriptFuncArg              Special
@@ -498,13 +498,14 @@ if exists("did_javascript_hilink")
   HiLink javascriptTagRef               Function
   HiLink javascriptComma                Normal
 
-  HiLink javascriptClassKeyword         Keyword
-  HiLink javascriptClassExtends         Keyword
-  HiLink javascriptClassName            Function
-  HiLink javascriptClassSuperName       Function
+  HiLink javascriptKeyword              Keyword
+  HiLink javascriptClassKeyword         javascriptKeyword
+  HiLink javascriptClassExtends         javascriptKeyword
+  HiLink javascriptClassName            Type
+  HiLink javascriptClassSuperName       Type
   HiLink javascriptClassStatic          StorageClass
   HiLink javascriptMethodAccessorWords  StorageClass
-  HiLink javascriptClassSuper           keyword
+  HiLink javascriptClassSuper           javascriptKeyword
 
   HiLink shellbang                      Comment
 
