@@ -29,6 +29,10 @@ files='
   web-crypto
   web-fetch
   web-service-worker
+  web-payment
+  web-encoding
+  web-network
+  web-geo
   dom-node
   dom-elem
   dom-form
