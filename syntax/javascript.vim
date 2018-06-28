@@ -506,8 +506,8 @@ if exists("did_javascript_hilink")
   HiLink javascriptMethodAccessor       Operator
   HiLink javascriptObjectMethodName     Function
 
-  HiLink javascriptFuncKeyword          javascriptKeyword
-  HiLink javascriptAsyncFunc            javascriptKeyword
+  HiLink javascriptFuncKeyword          Keyword
+  HiLink javascriptAsyncFunc            Keyword
   HiLink javascriptArrowFunc            Statement
   HiLink javascriptFuncName             Function
   HiLink javascriptFuncArg              Special
