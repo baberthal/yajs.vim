@@ -36,12 +36,21 @@ else
 endif
 
 " Dollar sign is permitted anywhere in an identifier
+" html might require - as keyword ch (ex: html5.vim)
 " Patch 7.4.1142
 if has("patch-7.4-1142")
   if has("win32")
-    syn iskeyword @,48-57,_,128-167,224-235,$
+    if exists("main_syntax") && main_syntax == 'html'
+      syn iskeyword @,48-57,_,128-167,224-235,$,-
+    else
+      syn iskeyword @,48-57,_,128-167,224-235,$
+  endif
   else
-    syn iskeyword @,48-57,_,192-255,$
+    if exists("main_syntax") && main_syntax == 'html'
+      syn iskeyword @,48-57,_,192-255,$,-
+    else
+      syn iskeyword @,48-57,_,192-255,$
+    endif
   endif
 endif
 
@@ -75,7 +84,7 @@ syntax match   javascriptOpSymbols             /+\(+\|=\)\?/ nextgroup=javascrip
 syntax match   javascriptOpSymbols             /-\(-\|=\)\?/ nextgroup=javascriptRegexpString,javascriptInvalidOp " 3: -, --, -=
 syntax match   javascriptSpreadOp              contained /\.\.\./ " 1
 " exponentiation operator
-syntax match   javascriptOpSymbol              contained /\(**\|**=\)/ " 2: **, **=
+syntax match   javascriptOpSymbol              contained /\(\*\*\|\*\*=\)/ " 2: **, **=
 
 
 " Comment
@@ -111,7 +120,7 @@ syntax keyword javascriptDocTags               contained file fileOverview overv
 syntax keyword javascriptDocTags               contained summary todo license preserve nextgroup=javascriptDocDesc skipwhite
 
 syntax keyword javascriptDocTags               contained borrows exports nextgroup=javascriptDocA skipwhite
-syntax keyword javascriptDocTags               contained param arg argument property prop module nextgroup=javascriptDocNamedParamType,javascriptDocParamName skipwhite
+syntax keyword javascriptDocTags               contained param arg argument property prop module submodule nextgroup=javascriptDocNamedParamType,javascriptDocParamName skipwhite
 syntax keyword javascriptDocTags               contained type nextgroup=javascriptDocParamType skipwhite
 syntax keyword javascriptDocTags               contained define enum extends implements this typedef nextgroup=javascriptDocParamType skipwhite
 syntax keyword javascriptDocTags               contained return returns throws exception nextgroup=javascriptDocParamType,javascriptDocParamName skipwhite
@@ -181,10 +190,12 @@ syntax match   javascriptUnicodeEscapeSequence /\\u[0-9a-fA-F]\{4}/ nextgroup=@j
 syntax match   javascriptUnicodeEscapeSequence /\\u{[0-9a-fA-F]\+}/ nextgroup=@javascriptComments skipwhite skipempty
 
 " Number
-syntax match   javascriptNumber                /\<0[bB][01]\+\>/ nextgroup=@javascriptComments skipwhite skipempty
-syntax match   javascriptNumber                /\<0[oO][0-7]\+\>/ nextgroup=@javascriptComments skipwhite skipempty
-syntax match   javascriptNumber                /\<0[xX][0-9a-fA-F]\+\>/ nextgroup=@javascriptComments skipwhite skipempty
-syntax match   javascriptNumber                /[+-]\=\%(\d\+\.\d*\|\d\+\|\.\d\+\)\%([eE][+-]\=\d\+\)\=\>/ nextgroup=@javascriptComments skipwhite skipempty
+syntax match   javascriptNumber                /\<0[bB][01]\+n\?\>/ nextgroup=@javascriptComments skipwhite skipempty
+syntax match   javascriptNumber                /\<0[oO][0-7]\+n\?\>/ nextgroup=@javascriptComments skipwhite skipempty
+syntax match   javascriptNumber                /\<0[xX][0-9a-fA-F]\+n\?\>/ nextgroup=@javascriptComments skipwhite skipempty
+syntax match   javascriptNumber                /[+-]\=\%(\d\+\.\d\+\|\d\+\|\.\d\+\)\%([eE][+-]\=\d\+\)\=\>/ nextgroup=@javascriptComments skipwhite skipempty
+syntax match   javascriptNumber                /[+-]\=\d\+\.\%([eE][+-]\=\d\+\)\=/ nextgroup=@javascriptComments skipwhite skipempty
+syntax match   javascriptNumber                /[+-]\=\d\+n\>/ nextgroup=@javascriptComments skipwhite skipempty
 
 syntax cluster javascriptTypes                 contains=javascriptString,javascriptTemplate,javascriptTagRef,javascriptRegexp,javascriptNumber,javascriptBoolean,javascriptNull,javascriptArray
 syntax cluster javascriptValue                 contains=@javascriptTypes,@javascriptExpression,javascriptFuncKeyword,javascriptClassKeyword,javascriptObjectLiteral,javascriptIdentifier,javascriptIdentifierName,javascriptOperator,javascriptOpSymbols
@@ -288,6 +299,10 @@ runtime syntax/yajs/es6-map.vim
 runtime syntax/yajs/es6-set.vim
 runtime syntax/yajs/es6-proxy.vim
 runtime syntax/yajs/es6-promise.vim
+runtime syntax/yajs/es6-typed-array.vim
+runtime syntax/yajs/es6-dataview.vim
+runtime syntax/yajs/es6-bigint.vim
+runtime syntax/yajs/es6-generator.vim
 runtime syntax/yajs/ecma-402.vim
 runtime syntax/yajs/node.vim
 runtime syntax/yajs/web.vim
@@ -353,7 +368,7 @@ syntax match   javascriptClassName             contained /\k\+/ nextgroup=javasc
 syntax match   javascriptClassSuperName        contained /[a-zA-Z_$][0-9a-zA-Z_$\[\]\.\(\)]*/ nextgroup=javascriptClassBlock skipwhite
 syntax keyword javascriptClassExtends          contained extends nextgroup=javascriptClassSuperName,javascriptClassExtendsNew skipwhite
 syntax keyword javascriptClassExtendsNew       contained new nextgroup=javascriptClassSuperName skipwhite
-syntax region  javascriptClassBlock            contained matchgroup=javascriptBraces start=/{/ end=/}/ contains=javascriptMethodName,javascriptMethodAccessor,javascriptClassStatic,@javascriptComments fold
+syntax region  javascriptClassBlock            contained matchgroup=javascriptBraces start=/{/ end=/}/ contains=javascriptMethodName,javascriptMethodAccessor,javascriptAsyncFuncKeyword,javascriptClassStatic,@javascriptComments fold
 syntax keyword javascriptClassStatic           contained static nextgroup=javascriptMethodName,javascriptMethodAccessor skipwhite
 
 
@@ -405,23 +420,26 @@ syntax region  javascriptLoopParen             contained matchgroup=javascriptPa
 syntax region  javascriptFuncCallArg           contained matchgroup=javascriptParens start=/(/ end=/)/ contains=javascriptComma,@javascriptExpression,@javascriptComments nextgroup=@javascriptAfterIdentifier skipwhite skipempty
 syntax region  javascriptEventFuncCallArg      contained matchgroup=javascriptParens start=/(/ end=/)/ contains=@javascriptEventExpression,@javascriptComments
 
-syntax match   javascriptArrowFuncDef          /(\_[^)]*)\_s*=>/ contains=javascriptArrowFuncArg,javascriptComma,javascriptArrowFunc nextgroup=javascriptOperator,javascriptIdentifierName,javascriptBlock,javascriptArrowFuncDef,javascriptParenObjectLiteral,javascriptClassSuper,javascriptClassKeyword,@afterArrowFunc skipwhite skipempty
-syntax match   javascriptArrowFuncDef          /[a-zA-Z_$]\k*\_s*=>/ contains=javascriptArrowFuncArg,javascriptArrowFunc nextgroup=javascriptOperator,javascriptIdentifierName,javascriptBlock,javascriptArrowFuncDef,javascriptParenObjectLiteral,javascriptClassSuper,javascriptClassKeyword,@afterArrowFunc skipwhite skipempty
+
+syntax match   javascriptArrowFuncDef          /(\_[^)]*)\_s*=>/ contains=javascriptArrowFuncArg,javascriptComma,javascriptArrowFunc nextgroup=javascriptOperator,javascriptIdentifierName,javascriptBlock,javascriptArrowFuncDef,javascriptParenObjectLiteral,javascriptClassSuper,javascriptClassKeyword,javascriptAwaitFuncKeyword,@afterArrowFunc skipwhite skipempty
+syntax match   javascriptArrowFuncDef          /[a-zA-Z_$]\k*\_s*=>/ contains=javascriptArrowFuncArg,javascriptArrowFunc nextgroup=javascriptOperator,javascriptIdentifierName,javascriptBlock,javascriptArrowFuncDef,javascriptParenObjectLiteral,javascriptClassSuper,javascriptClassKeyword,javascriptAwaitFuncKeyword,@afterArrowFunc skipwhite skipempty
 syntax match   javascriptArrowFunc             /=>/
 syntax match   javascriptArrowFuncArg          contained /[a-zA-Z_$]\k*/
 syntax region  javascriptArrowFuncArg          contained matchgroup=javascriptParens start=/(/ end=/)/ contains=@javascriptFuncArgElements nextgroup=javascriptArrowFunc skipwhite skipwhite skipempty
+syntax match   javascriptAsynArrowFunc         /(\s*async\s*\(=>\)\@!/ contains=javascriptAsyncFuncKeyword
+
 syntax keyword javascriptFuncKeyword           function nextgroup=javascriptAsyncFunc,javascriptSyncFunc
 
 " Special object for arrow function direct return
-syntax region  javascriptParenObjectLiteral    start=/(\_s*\ze{/ end=/)/ contains=javascriptObjectLiteral,@javascriptComments fold
+syntax region  javascriptParenObjectLiteral    contained start=/(\_s*\ze{/ end=/)/ contains=javascriptObjectLiteral,@javascriptComments transparent fold
 " Special object for jsx return
-syntax region  javascriptParenTagLiteral       containedin=@javascriptValue start=/(\ze\_s*</ end=/)/ contains=@javascriptExpression,@javascriptComments fold
+syntax region  javascriptParenTagLiteral       containedin=@javascriptValue start=/(\ze\_s*</ end=/)/ contains=@javascriptExpression,@javascriptComments transparent fold
 
 " For ((foo) => {})
 syntax region  javascriptParenExp              matchgroup=javascriptParens start=/(\ze\_s*(/ end=/)/ contains=@javascriptExpression nextgroup=@javascriptComments,javascriptOpSymbols skipwhite skipempty
 
 " async await
-syntax keyword javascriptAsyncFuncKeyword      async nextgroup=javascriptFuncKeyword,javascriptArrowFuncDef skipwhite
+syntax keyword javascriptAsyncFuncKeyword      async nextgroup=javascriptFuncKeyword,javascriptArrowFuncDef,javascriptMethodName skipwhite
 syntax keyword javascriptAwaitFuncKeyword      await nextgroup=@javascriptExpression skipwhite
 
 syntax cluster javascriptExpression            add=javascriptAsyncFuncKeyword,javascriptAwaitFuncKeyword
@@ -507,7 +525,8 @@ if exists("did_javascript_hilink")
   HiLink javascriptObjectMethodName     Function
 
   HiLink javascriptFuncKeyword          Keyword
-  HiLink javascriptAsyncFunc            Keyword
+  HiLink javascriptAsyncFuncKeyword     Keyword
+  HiLink javascriptAwaitFuncKeyword     Keyword
   HiLink javascriptArrowFunc            Statement
   HiLink javascriptFuncName             Function
   HiLink javascriptFuncArg              Special
